@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, catchError, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, firstValueFrom, throwError } from 'rxjs';
 import { Customer } from '../classes/Customer';
 
 @Injectable({
@@ -8,14 +8,28 @@ import { Customer } from '../classes/Customer';
 })
 export class DataService {
 
-  constructor(private http: HttpClient) { }
+  private _customers = new BehaviorSubject<Customer[]>([]);
 
-  fetchData(): Observable<Customer[]> {
-    return this.http.get<Customer[]>('http://localhost:3000/customer').pipe(
-      catchError(error => {
-        console.error('An error occurred:', error.message);
-        return throwError(() => new Error('Something bad happened; please try again later.'));
-      })
-    );
+  get customers(): Observable<Customer[]> {
+    return this._customers.asObservable();
+  }
+
+  
+
+  constructor(private httpClient: HttpClient) { }
+
+  fetchCustomers(): void {
+    this.httpClient.get<Customer[]>('http://localhost:3000/customer')
+      .pipe(
+        catchError(this.handleError)
+      )
+      .subscribe(customers => {
+        this._customers.next(customers);
+      });
+  }
+
+  private handleError(error: HttpErrorResponse) {
+    // Your error handling logic here...
+    return throwError(() => new Error('Something bad happened; please try again later.'));
   }
 }

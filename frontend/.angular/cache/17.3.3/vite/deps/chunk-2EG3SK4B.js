@@ -4,6 +4,9 @@ var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
 var __getOwnPropSymbols = Object.getOwnPropertySymbols;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __knownSymbol = (name, symbol) => {
+  return (symbol = Symbol[name]) ? symbol : Symbol.for("Symbol." + name);
+};
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __spreadValues = (a, b) => {
   for (var prop in b ||= {})
@@ -48,6 +51,43 @@ var __async = (__this, __arguments, generator) => {
     var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
     step((generator = generator.apply(__this, __arguments)).next());
   });
+};
+var __await = function(promise, isYieldStar) {
+  this[0] = promise;
+  this[1] = isYieldStar;
+};
+var __yieldStar = (value) => {
+  var obj = value[__knownSymbol("asyncIterator")];
+  var isAwait = false;
+  var method;
+  var it = {};
+  if (obj == null) {
+    obj = value[__knownSymbol("iterator")]();
+    method = (k) => it[k] = (x) => obj[k](x);
+  } else {
+    obj = obj.call(value);
+    method = (k) => it[k] = (v) => {
+      if (isAwait) {
+        isAwait = false;
+        if (k === "throw")
+          throw v;
+        return v;
+      }
+      isAwait = true;
+      return {
+        done: false,
+        value: new __await(new Promise((resolve) => {
+          var x = obj[k](v);
+          if (!(x instanceof Object))
+            throw TypeError("Object expected");
+          resolve(x);
+        }), 1)
+      };
+    };
+  }
+  return it[__knownSymbol("iterator")] = () => it, method("next"), "throw" in obj ? method("throw") : it.throw = (x) => {
+    throw x;
+  }, "return" in obj && method("return"), it;
 };
 
 // node_modules/tslib/tslib.es6.mjs
@@ -219,8 +259,8 @@ function __spreadArray(to, from2, pack) {
     }
   return to.concat(ar || Array.prototype.slice.call(from2));
 }
-function __await(v) {
-  return this instanceof __await ? (this.v = v, this) : new __await(v);
+function __await2(v) {
+  return this instanceof __await2 ? (this.v = v, this) : new __await2(v);
 }
 function __asyncGenerator(thisArg, _arguments, generator) {
   if (!Symbol.asyncIterator)
@@ -245,7 +285,7 @@ function __asyncGenerator(thisArg, _arguments, generator) {
     }
   }
   function step(r) {
-    r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r);
+    r.value instanceof __await2 ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r);
   }
   function fulfill(value) {
     resume("next", value);
@@ -1986,16 +2026,16 @@ function readableStreamLikeToAsyncGenerator(readableStream) {
         case 2:
           if (false)
             return [3, 8];
-          return [4, __await(reader.read())];
+          return [4, __await2(reader.read())];
         case 3:
           _a = _b.sent(), value = _a.value, done = _a.done;
           if (!done)
             return [3, 5];
-          return [4, __await(void 0)];
+          return [4, __await2(void 0)];
         case 4:
           return [2, _b.sent()];
         case 5:
-          return [4, __await(value)];
+          return [4, __await2(value)];
         case 6:
           return [4, _b.sent()];
         case 7:
@@ -5457,6 +5497,7 @@ export {
   __spreadProps,
   __objRest,
   __async,
+  __yieldStar,
   UnsubscriptionError,
   Subscription,
   config,
@@ -5631,4 +5672,4 @@ export {
   zipAll,
   zipWith
 };
-//# sourceMappingURL=chunk-SXIXOCJ4.js.map
+//# sourceMappingURL=chunk-2EG3SK4B.js.map
