@@ -1,5 +1,10 @@
-<button (click)="fetchData()">Fetch data</button>
-<ag-grid-angular  class="ag-theme-quartz"
-style="height: 100vh; width: 100%;" [rowData]="rowData" [columnDefs]="colDefs" [gridOptions]="">
+<div style="padding: 5px; height: 100vh; box-sizing: border-box; display: grid; grid-template-rows: auto 1fr;">
+    <div class="container">
+        <button (click)="fetchData()">Fetch data</button>
+        <button (click)="sortByName()">Sort by Name</button>
+    </div>
+    <ag-grid-angular class="ag-theme-quartz" style="width: 100%;" [rowData]="rowData" [columnDefs]="colDefs"
+        [gridOptions]="gridOptions" [alwaysShowHorizontalScroll]="true" (gridReady)="onGridReady($event)">
 
-</ag-grid-angular>
+    </ag-grid-angular>
+</div>

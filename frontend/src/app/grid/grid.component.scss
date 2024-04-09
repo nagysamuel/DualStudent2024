@@ -1,0 +1,10 @@
+.container {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    padding: 5px 0px;
+}
+
+.container > button:not(button:last-child) {
+    margin-right: 5px;
+}

@@ -1,15 +1,21 @@
-​import { Database } from 'sqlite3';
+import { Database } from 'sqlite3';
 
-// Open a SQLite database, stored in the file db.sqlite
-const db = new Database('db.sqlite3');
+// Open a SQLite database, stored in the file db.sqlite3
+const db = new Database('db.sqlite3', (err) => {
+    if (err) {
+        console.error('Could not connect to database', err);
+        process.exit(1); // Exit the application with a failure code
+    }
+});
 
-function executeCall(query: string, callback: (res: unknown[]) => void) {
-    db.all(query, (_, result) => callback(result));
-}
+function getCustomers(): Promise<unknown[]> {
+    return new Promise((resolve, reject) => {
+      db.all("select * from customer", (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      });
+    });
+  }
+  
 
-function getCustomers(callback: (res: unknown[]) => void) {
-    executeCall("select * from customer", callback);
-}
-
-
-export {getCustomers}
+export { getCustomers };

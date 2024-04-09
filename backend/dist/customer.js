@@ -35,15 +35,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+// Assume database.getCustomers now returns a Promise<unknown[]>
 const express_1 = __importDefault(require("express"));
 const database = __importStar(require("./database"));
 const router = express_1.default.Router();
 router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const customers = database.getCustomers((result) => res.json(result));
+        // Await the async operation
+        const customers = yield database.getCustomers();
+        res.json(customers);
     }
     catch (error) {
         console.error("Error fetching customers:", error);
+        // Respond with error message
         res.status(500).send("Failed to fetch customers");
     }
 }));

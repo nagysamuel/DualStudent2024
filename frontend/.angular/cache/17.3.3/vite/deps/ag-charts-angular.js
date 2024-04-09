@@ -14,12 +14,13 @@ import {
   ɵɵdefineInjector,
   ɵɵdefineNgModule,
   ɵɵdirectiveInject
-} from "./chunk-FXHLSNNU.js";
+} from "./chunk-FE3S64DW.js";
+import "./chunk-WSA2QMXP.js";
 import {
   __spreadProps,
   __spreadValues,
   __yieldStar
-} from "./chunk-2EG3SK4B.js";
+} from "./chunk-EGKP3FWG.js";
 
 // node_modules/ag-charts-community/dist/package/main.esm.mjs
 var __defProp = Object.defineProperty;

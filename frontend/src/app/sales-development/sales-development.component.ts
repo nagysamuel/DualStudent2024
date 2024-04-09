@@ -24,14 +24,17 @@ export class SalesDevelopmentComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     //Get parameters from route
     this.route.paramMap.subscribe(params => {
+      //Gets the customer id from the url
       this.customerId = params.get("customer");
 
-      this.subscription.add(this.dataService.customers.subscribe(customers => {
-        const customer = customers.filter(customer => this.customerId 
-                                          && customer.customer_id === this.customerId).at(0);
-        if(customer) this.setOptions(customer);
-      }))
-
+      if (this.customerId) {
+        //Subscribes to changes of customers and filters when changes occur
+        this.subscription.add(this.dataService.customers.subscribe(customers => {
+          const customer = customers.filter(customer => this.customerId
+            && customer.customer_id === this.customerId).at(0);
+          if (customer) this.setOptions(customer);
+        }));
+      }
     });
 
   }
@@ -40,6 +43,7 @@ export class SalesDevelopmentComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
+  //Sets the options for the diagram
   private setOptions(customer: Customer): void {
     const data = [
       {year: "2021", amount: Number(customer.sales2021)},

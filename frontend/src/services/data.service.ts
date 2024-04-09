@@ -14,8 +14,6 @@ export class DataService {
     return this._customers.asObservable();
   }
 
-  
-
   constructor(private httpClient: HttpClient) { }
 
   fetchCustomers(): void {
@@ -25,11 +23,11 @@ export class DataService {
       )
       .subscribe(customers => {
         this._customers.next(customers);
+        customers.forEach(c => typeof c.idx);
       });
   }
 
   private handleError(error: HttpErrorResponse) {
-    // Your error handling logic here...
     return throwError(() => new Error('Something bad happened; please try again later.'));
   }
 }

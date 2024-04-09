@@ -6,15 +6,10 @@ import { DataService } from '../services/data.service';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   title = 'frontend';
 
-  constructor(private dataService: DataService) { 
-  }
-
-  ngOnInit(): void {
-    this.dataService.fetchCustomers();
-    console.log("App");
+  constructor() { 
   }
 
 }

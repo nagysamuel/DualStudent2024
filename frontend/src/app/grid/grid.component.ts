@@ -1,9 +1,11 @@
 import { AfterViewInit, Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { Customer } from '../../classes/Customer';
 import { Subscription, first } from 'rxjs';
-import { ColDef, GridApi, GridOptions, GridReadyEvent, IDateFilterParams, INumberFilterParams } from 'ag-grid-community';
+import { ClientSideRowModelModule, ColDef, GridApi, GridOptions, GridReadyEvent, IDateFilterParams, INumberFilterParams, ModuleRegistry } from 'ag-grid-community';
 import { DataService } from '../../services/data.service';
 import { Router } from '@angular/router';
+
+ModuleRegistry.registerModules([ClientSideRowModelModule]);
 
 @Component({
   selector: 'app-grid',
@@ -14,9 +16,12 @@ export class GridComponent implements OnInit, OnDestroy {
 
   private subscription: Subscription = new Subscription();
 
+  private gridApi!: GridApi<Customer>;
+
   constructor(private router: Router, private ngZone: NgZone, private dataService: DataService) { }
 
   ngOnInit(): void {
+    //Subscribe to changes of the customers then show them in the table
     this.subscription.add(
       this.dataService.customers.subscribe(customers => {
         this.rowData = customers;
@@ -28,7 +33,8 @@ export class GridComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  numberFilterParams: INumberFilterParams = {
+  //Filter parameters for number filters of the table
+  public numberFilterParams: INumberFilterParams = {
     allowedCharPattern: "\\d\\-\\,\\$",
     numberParser: (text: string | null) => {
       return text == null
@@ -40,7 +46,8 @@ export class GridComponent implements OnInit, OnDestroy {
     },
   };
 
-  dateFilterParams: IDateFilterParams = {
+  //Filter parameters for date filters of the table
+  public dateFilterParams: IDateFilterParams = {
     comparator: (filterLocalDateAtMidnight: Date, cellValue: string) => {
       var dateAsString = cellValue;
       if (dateAsString == null) return -1;
@@ -66,10 +73,11 @@ export class GridComponent implements OnInit, OnDestroy {
     inRangeFloatingFilterDateFormat: "Do MMM YYYY",
   };
 
-  rowData: Customer[] = [];
+  //Represents the data of the table rows
+  public rowData: Customer[] = [];
 
   // Column Definitions: Defines the columns to be displayed.
-  colDefs: ColDef[] = [
+  public colDefs: ColDef[] = [
     {
       "field": "idx", "headerName": "Index", filter: "agNumberColumnFilter",
       filterParams: this.numberFilterParams, comparator: this.numberComparator
@@ -119,12 +127,15 @@ export class GridComponent implements OnInit, OnDestroy {
     },
   ];
 
-  gridOptions: GridOptions = {
+  //Grid options for the grid
+  public gridOptions: GridOptions = {
     domLayout: 'normal',
-    suppressHorizontalScroll: false
+    suppressHorizontalScroll: false,
+    alwaysShowHorizontalScroll: true
   };
 
-  numberComparator(valueA: number, valueB: number) {
+  //Number comparator: Used for sorting number columns
+  private numberComparator(valueA: string, valueB: string) {
     // Assuming nulls and undefined values should be sorted to the bottom
     if (valueA == null && valueB == null) {
       return 0;
@@ -136,10 +147,11 @@ export class GridComponent implements OnInit, OnDestroy {
       return -1;
     }
     // Standard number comparison
-    return valueA - valueB;
+    return Number(valueA) - Number(valueB);
   }
 
-  dateComparator(dateStrA: Date, dateStrB: Date) {
+  //Date comparator: Used for sorting date columns
+  private dateComparator(dateStrA: string, dateStrB: string) {
     // Handle nulls and undefined
     if (!dateStrA && !dateStrB) {
       return 0;
@@ -150,17 +162,41 @@ export class GridComponent implements OnInit, OnDestroy {
     if (!dateStrB) {
       return -1;
     }
+
+    //Converts a string to a date
+    const strToDate = (dateStr: string, seperator: string): Date => {
+    
+        const parts = dateStr.split(seperator);
+    
+        const day = parseInt(parts[0]);
+        const month = parseInt(parts[1]) - 1;
+        const year = parseInt(parts[2]);
+    
+        return new Date(year, month, day);
+    }
+
     // Convert date strings to Date objects for comparison
-    const dateA = new Date(dateStrA);
-    const dateB = new Date(dateStrB);
+    const dateA = new Date(strToDate(dateStrA, "."));
+    const dateB = new Date(strToDate(dateStrB, "."));
 
     return dateA.getTime() - dateB.getTime();
   }
 
-
-
-  fetchData() {
+  public fetchData() {
     this.dataService.fetchCustomers();
+  }
+
+  public sortByName() {
+    this.gridApi.applyColumnState({
+      state: [{ colId: "last_name", sort: "asc", sortIndex: 0 },
+              { colId: "first_name", sort: "asc", sortIndex: 1 }
+      ],
+      defaultState: { sort: null },
+    });
+  }
+
+  public onGridReady(params: GridReadyEvent) {
+    this.gridApi = params.api;
   }
 
   public onButtonSalesShareClick(data: Customer): void {
