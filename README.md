@@ -1,6 +1,6 @@
 # DualStudent2024
 
-Introducing DualStudent2024, a collection of programs convert CSV data into an easily accessible web-based table. This collection includes:
+Introducing DualStudent2024, a collection of programs to convert CSV data into an easily accessible web-based table. This collection includes:
 
 * A **Python Program** for converting CSV files into SQLite databases.
 * A **Node.js Backend** to serve data from the SQLite database via HTTP requests.
